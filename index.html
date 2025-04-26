@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+	<head>
+		<meta charset="UTF-8">
+		<title>Sign Data Generator</title>
+		<link rel="stylesheet" href="">
+		<style>
+		</style>
+		<script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"
+			crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<h1>Sign Data Generator</h1>
+
+		<p>Enter the name of a sign and perform it in different ways. When you are done, stop recording to download a JSON file of the hand landmark data for that sign.</p>
+
+		<button onclick="startCamera()">Start Camera</button>
+
+		<button onclick="startRecording()">Start Recording Hand Landmarks</button>
+		<button onclick="stopRecording()">Stop Recording Hand Landmarks</button>
+
+		<video id="webcam" autoplay playsinline width="640" height="480"></video>
+
+		<input id="signName" placeholder="Sign Name"></input>
+
+		<script type="module" src="index.js"></script>
+	</body>
+</html>
