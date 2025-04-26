@@ -5,6 +5,9 @@ import {
 
 const video = document.getElementById("webcam");
 const signName = document.getElementById("signName");
+const startCameraButton = document.getElementById("startCameraButton");
+const startRecordingButton = document.getElementById("startRecordingButton");
+const stopRecordingButton = document.getElementById("stopRecordingButton");
 
 let continueRecording = false;
 
@@ -15,6 +18,7 @@ window.startCamera = function() {
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
       .then(stream => {
         video.srcObject = stream;
+        startCameraButton.disabled = true;
       })
       .catch(err => {
         console.error("Error accessing webcam:", err);
@@ -24,6 +28,8 @@ window.startCamera = function() {
 window.startRecording = async function() {
     currentSigns = [];
     signName.disabled = true; 
+    startRecordingButton.disabled = true;
+    stopRecordingButton.disabled = false;
     
     // create task
     const vision = await FilesetResolver.forVisionTasks(
@@ -78,6 +84,8 @@ function processResults(detections){
 window.stopRecording = function() {
     continueRecording = false;
     signName.disabled = false;
+    stopRecordingButton.disabled = true;
+    startRecordingButton.disabled = false;
 
     console.log(currentSigns);
 

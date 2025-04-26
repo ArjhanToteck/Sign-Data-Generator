@@ -16,10 +16,10 @@
 
 		<p>Enter the name of a sign and perform it in different ways. When you are done, stop recording to download a JSON file of the hand landmark data for that sign.</p>
 
-		<button onclick="startCamera()">Start Camera</button>
+		<button id="startCameraButton" onclick="startCamera()">Start Camera</button>
 
-		<button onclick="startRecording()">Start Recording Hand Landmarks</button>
-		<button onclick="stopRecording()">Stop Recording Hand Landmarks</button>
+		<button id="startRecordingButton" onclick="startRecording()">Start Recording Hand Landmarks</button>
+		<button disabled id="stopRecordingButton" onclick="stopRecording()">Stop Recording Hand Landmarks</button>
 
 		<video id="webcam" autoplay playsinline width="640" height="480"></video>
 
