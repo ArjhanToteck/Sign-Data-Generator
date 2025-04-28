@@ -1,7 +1,7 @@
 import {
     FilesetResolver,
     HandLandmarker
-  } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js";
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js";
 
 const video = document.getElementById("webcam");
 const signName = document.getElementById("signName");
@@ -13,24 +13,24 @@ let continueRecording = false;
 
 let currentSigns = [];
 
-window.startCamera = function() {
+window.startCamera = function () {
     // ask for webcam access
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-      .then(stream => {
-        video.srcObject = stream;
-        startCameraButton.disabled = true;
-      })
-      .catch(err => {
-        console.error("Error accessing webcam:", err);
-      });
+        .then(stream => {
+            video.srcObject = stream;
+            startCameraButton.disabled = true;
+        })
+        .catch(err => {
+            alert("Error accessing webcam: " + err);
+        });
 }
 
-window.startRecording = async function() {
+window.startRecording = async function () {
     currentSigns = [];
-    signName.disabled = true; 
+    signName.disabled = true;
     startRecordingButton.disabled = true;
     stopRecordingButton.disabled = false;
-    
+
     // create task
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
@@ -39,11 +39,11 @@ window.startRecording = async function() {
     const handLandmarker = await HandLandmarker.createFromOptions(
         vision,
         {
-        baseOptions: {
-            modelAssetPath: "hand_landmarker.task"
-        },
-        numHands: 2
-    });
+            baseOptions: {
+                modelAssetPath: "hand_landmarker.task"
+            },
+            numHands: 2
+        });
 
     // run task
 
@@ -53,7 +53,7 @@ window.startRecording = async function() {
 
     function renderLoop() {
         // stop recording if needed
-        if (!continueRecording){
+        if (!continueRecording) {
             return;
         }
 
@@ -73,15 +73,15 @@ window.startRecording = async function() {
     renderLoop();
 }
 
-function processResults(detections){
+function processResults(detections) {
     currentSigns.push(
-    {
-        signName: signName.value,
-        detections: detections
-    });
+        {
+            signName: signName.value,
+            detections: detections
+        });
 }
 
-window.stopRecording = function() {
+window.stopRecording = function () {
     continueRecording = false;
     signName.disabled = false;
     stopRecordingButton.disabled = true;
