@@ -18,9 +18,47 @@ let currentSigns = [];
 window.startCamera = function () {
     // ask for webcam access
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(stream => {
+        .then(async stream => {
+
+            // turn on video
             video.srcObject = stream;
             startCameraButton.disabled = true;
+
+            // turn on vision and tracking
+
+            // create task
+            const vision = await FilesetResolver.forVisionTasks(
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+            );
+
+            const handLandmarker = await HandLandmarker.createFromOptions(
+                vision,
+                {
+                    baseOptions: {
+                        modelAssetPath: "hand_landmarker.task"
+                    },
+                    numHands: 2
+                });
+
+            // run task
+            await handLandmarker.setOptions({ runningMode: "video" });
+
+            // start detection loop
+            let lastVideoTime = -1;
+            detectionLoop();
+
+            function detectionLoop() {
+                if (video.currentTime !== lastVideoTime) {
+                    // get hand data
+                    const detections = handLandmarker.detectForVideo(video, performance.now());
+                    processDetections(detections);
+                    lastVideoTime = video.currentTime;
+                }
+
+                requestAnimationFrame(() => {
+                    detectionLoop();
+                });
+            }
         })
         .catch(err => {
             alert("Error accessing webcam: " + err);
@@ -33,55 +71,16 @@ window.startRecording = async function () {
     startRecordingButton.disabled = true;
     stopRecordingButton.disabled = false;
 
-    // create task
-    const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-    );
-
-    const handLandmarker = await HandLandmarker.createFromOptions(
-        vision,
-        {
-            baseOptions: {
-                modelAssetPath: "hand_landmarker.task"
-            },
-            numHands: 2
-        });
-
-    // run task
-
-    await handLandmarker.setOptions({ runningMode: "video" });
-
-    let lastVideoTime = -1;
-
     continueRecording = true;
-    renderLoop();
-
-    function renderLoop() {
-        // stop recording if needed
-        if (!continueRecording) {
-            return;
-        }
-
-        if (video.currentTime !== lastVideoTime) {
-            // get hand data
-            const detections = handLandmarker.detectForVideo(video, performance.now());
-            processDetections(detections);
-            lastVideoTime = video.currentTime;
-        }
-
-        requestAnimationFrame(() => {
-            renderLoop();
-        });
-    }
 }
 
 function processDetections(detections) {
-    // push new landmarks
-    currentSigns.push(
-        {
-            signName: signName.value,
-            detections: detections.worldLandmarks
-        });
+    // if we're recording, save the detections
+    if (continueRecording) {
+        saveDetections();
+    }
+
+    // draw detections
 
     // clear canvas
     context.clearRect(0, 0, landmarkCanvas.width, landmarkCanvas.height);
@@ -97,6 +96,16 @@ function processDetections(detections) {
 
         drawLandmarks(context, currentLandmarks, { color: "#FF0000", lineWidth: 2 });
     }
+}
+
+
+function saveDetections(detections) {
+    // push new landmarks
+    currentSigns.push(
+        {
+            signName: signName.value,
+            detections: detections.worldLandmarks
+        });
 }
 
 window.stopRecording = function () {
