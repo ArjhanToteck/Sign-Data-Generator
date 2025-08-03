@@ -18,8 +18,6 @@ let stream;
 let currentSigns = [];
 
 window.startCamera = function () {
-    startCameraButton.disabled
-
     // ask for webcam access
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(async newStream => {
@@ -124,6 +122,7 @@ function processDetections(detections) {
     // loop through landmarks and draw them
     for (let i = 0; i < detections.landmarks.length; i++) {
         const currentLandmarks = detections.landmarks[i];
+        console.log(currentLandmarks);
 
         drawConnectors(context, currentLandmarks, HAND_CONNECTIONS, {
             color: "#00FF00",
