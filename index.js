@@ -6,23 +6,32 @@ import {
 const video = document.getElementById("webcam");
 const signName = document.getElementById("signName");
 const startCameraButton = document.getElementById("startCameraButton");
+const stopCameraButton = document.getElementById("stopCameraButton");
 const startRecordingButton = document.getElementById("startRecordingButton");
 const stopRecordingButton = document.getElementById("stopRecordingButton");
 const landmarkCanvas = document.getElementById("landmarkCanvas");
 const context = landmarkCanvas.getContext("2d");
 
 let continueRecording = false;
+let stream;
 
 let currentSigns = [];
 
 window.startCamera = function () {
+    startCameraButton.disabled
+
     // ask for webcam access
     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(async stream => {
+        .then(async newStream => {
+            // update ui elements
+            startCameraButton.disabled = true;
+            stopCameraButton.disabled = false;
+
+            // set stream globally
+            stream = newStream;
 
             // turn on video
             video.srcObject = stream;
-            startCameraButton.disabled = true;
 
             // turn on vision and tracking
 
@@ -50,6 +59,11 @@ window.startCamera = function () {
             detectionLoop();
 
             function detectionLoop() {
+                // stop if the stream was deleted
+                if (!stream) {
+                    return;
+                }
+
                 // check if the video has advanced since last time
                 if (video.currentTime !== lastVideoTime) {
                     // get hand data
@@ -70,6 +84,19 @@ window.startCamera = function () {
         });
 }
 
+window.stopCamera = function () {
+    // stop recording
+    stopRecording();
+
+    // stop stream and delete variable
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+
+    // update ui elements
+    stopCameraButton.disabled = true;
+    startCameraButton.disabled = false;
+}
+
 window.startRecording = async function () {
     // enable and disable ui elements
     signName.disabled = true;
@@ -86,7 +113,7 @@ window.startRecording = async function () {
 function processDetections(detections) {
     // if we're recording, save the detections
     if (continueRecording) {
-        saveDetections();
+        saveDetections(detections);
     }
 
     // draw detections
@@ -118,6 +145,11 @@ function saveDetections(detections) {
 }
 
 window.stopRecording = function () {
+    // don't do anything if not recording
+    if (!continueRecording) {
+        return;
+    }
+
     // stop recording
     continueRecording = false;
 
