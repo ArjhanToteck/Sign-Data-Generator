@@ -43,15 +43,20 @@ window.startCamera = function () {
             // run task
             await handLandmarker.setOptions({ runningMode: "video" });
 
-            // start detection loop
+            // this tracks where in the video we are, -1 to start
             let lastVideoTime = -1;
+
+            // start detection loop
             detectionLoop();
 
             function detectionLoop() {
+                // check if the video has advanced since last time
                 if (video.currentTime !== lastVideoTime) {
                     // get hand data
                     const detections = handLandmarker.detectForVideo(video, performance.now());
                     processDetections(detections);
+
+                    // update video time
                     lastVideoTime = video.currentTime;
                 }
 
@@ -66,11 +71,15 @@ window.startCamera = function () {
 }
 
 window.startRecording = async function () {
-    currentSigns = [];
+    // enable and disable ui elements
     signName.disabled = true;
     startRecordingButton.disabled = true;
     stopRecordingButton.disabled = false;
 
+    // clear signs
+    currentSigns = [];
+
+    // this will start recording
     continueRecording = true;
 }
 
@@ -109,14 +118,17 @@ function saveDetections(detections) {
 }
 
 window.stopRecording = function () {
+    // stop recording
     continueRecording = false;
+
+    // disable ui elements
     signName.disabled = false;
     stopRecordingButton.disabled = true;
     startRecordingButton.disabled = false;
 
     console.log(currentSigns);
 
-    // save sign data as 
+    // save sign data as json
     const jsonStr = JSON.stringify(currentSigns);
     const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
