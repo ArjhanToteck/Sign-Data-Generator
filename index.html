@@ -9,6 +9,9 @@
 	</style>
 	<script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"
 		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+		crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -22,7 +25,12 @@
 	<button id="startRecordingButton" onclick="startRecording()">Start Recording Hand Landmarks</button>
 	<button disabled id="stopRecordingButton" onclick="stopRecording()">Stop Recording Hand Landmarks</button>
 
-	<video id="webcam" autoplay playsinline width="640" height="480"></video>
+	<div style="position: relative; width: 640px; height: 480px;">
+		<video id="webcam" autoplay playsinline style="position: absolute; top:0; left:0;" width="640"
+			height="480"></video>
+
+		<canvas id="landmarkCanvas" style="position: absolute; top:0; left:0;" width="640" height="480"></canvas>
+	</div>
 
 	<input id="signName" placeholder="Sign Name"></input>
 

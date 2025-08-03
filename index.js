@@ -8,6 +8,8 @@ const signName = document.getElementById("signName");
 const startCameraButton = document.getElementById("startCameraButton");
 const startRecordingButton = document.getElementById("startRecordingButton");
 const stopRecordingButton = document.getElementById("stopRecordingButton");
+const landmarkCanvas = document.getElementById("landmarkCanvas");
+const context = landmarkCanvas.getContext("2d");
 
 let continueRecording = false;
 
@@ -51,6 +53,9 @@ window.startRecording = async function () {
 
     let lastVideoTime = -1;
 
+    continueRecording = true;
+    renderLoop();
+
     function renderLoop() {
         // stop recording if needed
         if (!continueRecording) {
@@ -60,7 +65,7 @@ window.startRecording = async function () {
         if (video.currentTime !== lastVideoTime) {
             // get hand data
             const detections = handLandmarker.detectForVideo(video, performance.now());
-            processResults(detections);
+            processDetections(detections);
             lastVideoTime = video.currentTime;
         }
 
@@ -68,17 +73,30 @@ window.startRecording = async function () {
             renderLoop();
         });
     }
-
-    continueRecording = true;
-    renderLoop();
 }
 
-function processResults(detections) {
+function processDetections(detections) {
+    // push new landmarks
     currentSigns.push(
         {
             signName: signName.value,
-            detections: detections
+            detections: detections.worldLandmarks
         });
+
+    // clear canvas
+    context.clearRect(0, 0, landmarkCanvas.width, landmarkCanvas.height);
+
+    // loop through landmarks and draw them
+    for (let i = 0; i < detections.landmarks.length; i++) {
+        const currentLandmarks = detections.landmarks[i];
+
+        drawConnectors(context, currentLandmarks, HAND_CONNECTIONS, {
+            color: "#00FF00",
+            lineWidth: 5
+        });
+
+        drawLandmarks(context, currentLandmarks, { color: "#FF0000", lineWidth: 2 });
+    }
 }
 
 window.stopRecording = function () {
