@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
+import Script from "next/script";
 
 export default function Page() {
 	const [signName, setSignName] = useState("");
@@ -35,9 +36,9 @@ export default function Page() {
 
 	return (
 		<main>
-			<script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js" crossOrigin="anonymous"></script>
-			<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossOrigin="anonymous"></script>
-			<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossOrigin="anonymous"></script>
+			<Script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js" crossOrigin="anonymous" />
+			<Script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossOrigin="anonymous" />
+			<Script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossOrigin="anonymous" />
 
 			<section>
 				<h1>Sign Data Generator</h1>
