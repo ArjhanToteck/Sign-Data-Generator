@@ -180,8 +180,10 @@ export default function Page() {
 	}
 
 	function stopCamera() {
-		// stop recording
-		stopRecording();
+		// stop recording if recording
+		if (record.current) {
+			stopRecording();
+		}
 
 		// stop stream and delete variable
 		stream.current.getTracks().forEach(track => track.stop());
