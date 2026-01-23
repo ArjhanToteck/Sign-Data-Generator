@@ -43,7 +43,7 @@ export default function Page() {
 			<section>
 				<h1>Sign Data Generator</h1>
 
-				<p>Enter the name of a sign and perform it in different ways. When you are done, stop recording to download a JSON file of the hand landmark data for that sign.</p>
+				<p>Enter the name of a sign and perform it in different ways. When you are done, stop recording to download a JSON file of the hand landmark data for that sign. Note that the UI is not intended for mobile.</p>
 
 				<br />
 				<br />
