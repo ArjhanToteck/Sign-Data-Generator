@@ -34,6 +34,23 @@ export default function Page() {
 		}
 	}, [canvas]);
 
+	// set video size and ratio
+	useEffect(() => {
+		const videoElement = video.current;
+
+		videoElement.addEventListener("loadedmetadata", onload);
+
+		return () => {
+			videoElement.removeEventListener("loadedmetadata", onload);
+		};
+
+		function onload() {
+			const ratio = videoElement.videoWidth / videoElement.videoHeight;
+
+			videoElement.parentElement.style.aspectRatio = ratio;
+		};
+	}, []);
+
 	return (
 		<main>
 			<Script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js" crossOrigin="anonymous" />
@@ -60,19 +77,33 @@ export default function Page() {
 					<button onClick={stopRecording} disabled={stopRecordingDisabled}>Stop Recording Hand Landmarks</button>
 				</div>
 
-				<div style={{ position: "relative", width: "640px", height: "480px" }}>
+				<br />
+
+				<div style={{ position: "relative", width: "50%" }}>
 					<video
 						ref={video}
 						autoPlay
 						playsInline
-						style={{ position: "absolute", top: 0, left: 0 }}
-						width="640"
-						height="480"
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							objectFit: "cover"
+						}}
 					></video>
 
 					<canvas
 						ref={canvas}
-						style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							zIndex: 1
+						}}
 						width="640"
 						height="480"
 					></canvas>
@@ -224,6 +255,7 @@ export default function Page() {
 		console.log(recordedSigns.current);
 
 		// download sign data
+		// TODO: might be better off putting this file saving part in its own function in a lib somewhere as this is probably pretty reusable
 
 		// save sign data as json
 		const jsonStr = JSON.stringify(recordedSigns.current);
